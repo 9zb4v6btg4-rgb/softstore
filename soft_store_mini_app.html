@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Soft Store</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0b0d12;color:#fff}
+    .app{max-width:520px;margin:auto;padding:22px 16px 32px}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+    .logo{font-size:22px;font-weight:800}
+    .badge{font-size:12px;color:#9aa3b2;background:#171b24;padding:7px 10px;border-radius:20px}
+    .hero{background:linear-gradient(145deg,#171d2a,#10131a);border:1px solid #252c39;border-radius:22px;padding:22px;margin-bottom:18px}
+    h1{margin:0 0 8px;font-size:28px}
+    p{color:#aeb6c4;line-height:1.45;margin:0}
+    button{border:0;border-radius:14px;padding:13px 16px;font-size:15px;font-weight:700;cursor:pointer}
+    .primary{background:#fff;color:#0b0d12;width:100%;margin-top:18px}
+    .hidden{display:none}
+    .check{text-align:center;padding:45px 18px}
+    .robot{font-size:52px;margin-bottom:14px}
+    .box{background:#171b24;border:1px solid #272e3a;border-radius:18px;padding:18px;margin:16px 0}
+    .box label{display:flex;gap:12px;align-items:center;color:#dce1e9}
+    input[type=checkbox]{width:21px;height:21px;accent-color:#fff}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+    .card{background:#141820;border:1px solid #252c38;border-radius:18px;padding:16px}
+    .icon{font-size:32px;margin-bottom:10px}
+    .name{font-weight:800;margin-bottom:5px}
+    .desc{font-size:13px;color:#929baa;min-height:38px}
+    .get{width:100%;margin-top:13px;background:#222936;color:#fff}
+    .nav{position:sticky;bottom:12px;display:flex;gap:8px;background:#11151d;border:1px solid #252c38;border-radius:18px;padding:7px;margin-top:20px}
+    .nav button{flex:1;background:transparent;color:#929baa;font-size:13px}
+    .nav button.active{background:#222936;color:#fff}
+    .status{margin-top:12px;text-align:center;font-size:13px;color:#7fca91}
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div id="checkScreen" class="check">
+    <div class="robot">🤖</div>
+    <h1>Проверка</h1>
+    <p>Подтверди, что ты не робот, чтобы открыть приложение.</p>
+    <div class="box">
+      <label>
+        <input id="human" type="checkbox">
+        <span>Я не робот</span>
+      </label>
+    </div>
+    <button class="primary" onclick="enterApp()">Продолжить</button>
+    <div id="checkStatus" class="status"></div>
+  </div>
+
+  <div id="mainScreen" class="hidden">
+    <div class="top">
+      <div class="logo">💻 Soft Store</div>
+      <div class="badge">Mini App</div>
+    </div>
+
+    <section id="home">
+      <div class="hero">
+        <h1>Добро пожаловать 👋</h1>
+        <p>Выбирай нужный софт из каталога и переходи к его получению.</p>
+        <button class="primary" onclick="showSection('catalog')">Открыть каталог</button>
+      </div>
+
+      <h2>Популярное</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="icon">🛠️</div>
+          <div class="name">Tool Pack</div>
+          <div class="desc">Набор полезных инструментов.</div>
+          <button class="get" onclick="getSoft('Tool Pack')">Получить</button>
+        </div>
+        <div class="card">
+          <div class="icon">⚡</div>
+          <div class="name">Utility Pro</div>
+          <div class="desc">Дополнительные утилиты.</div>
+          <button class="get" onclick="getSoft('Utility Pro')">Получить</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="catalog" class="hidden">
+      <h2>📦 Каталог</h2>
+      <div class="grid">
+        <div class="card"><div class="icon">🛠️</div><div class="name">Tool Pack</div><div class="desc">Полезные инструменты.</div><button class="get" onclick="getSoft('Tool Pack')">Получить</button></div>
+        <div class="card"><div class="icon">⚡</div><div class="name">Utility Pro</div><div class="desc">Набор утилит.</div><button class="get" onclick="getSoft('Utility Pro')">Получить</button></div>
+        <div class="card"><div class="icon">📁</div><div class="name">File Tools</div><div class="desc">Работа с файлами.</div><button class="get" onclick="getSoft('File Tools')">Получить</button></div>
+        <div class="card"><div class="icon">🔧</div><div class="name">System Tools</div><div class="desc">Системные инструменты.</div><button class="get" onclick="getSoft('System Tools')">Получить</button></div>
+      </div>
+    </section>
+
+    <section id="profile" class="hidden">
+      <div class="hero">
+        <h1>👤 Профиль</h1>
+        <p id="profileText">Пользователь Mini App</p>
+      </div>
+    </section>
+
+    <div class="nav">
+      <button class="active" onclick="showSection('home',this)">🏠 Главная</button>
+      <button onclick="showSection('catalog',this)">📦 Софт</button>
+      <button onclick="showSection('profile',this)">👤 Профиль</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+
+function enterApp(){
+  const checkbox=document.getElementById('human');
+  const status=document.getElementById('checkStatus');
+  if(!checkbox.checked){
+    status.textContent='Поставь галочку «Я не робот».';
+    return;
+  }
+  document.getElementById('checkScreen').classList.add('hidden');
+  document.getElementById('mainScreen').classList.remove('hidden');
+  if(tg) tg.HapticFeedback?.notificationOccurred('success');
+
+  const user=tg?.initDataUnsafe?.user;
+  if(user){
+    document.getElementById('profileText').textContent =
+      `Привет, ${user.first_name || 'пользователь'}!`;
+  }
+}
+
+function showSection(id,btn){
+  ['home','catalog','profile'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+function getSoft(name){
+  if(tg) tg.showAlert(`Вы выбрали: ${name}\n\nЗдесь позже можно подключить выдачу файла через вашего бота.`);
+  else alert(`Вы выбрали: ${name}`);
+}
+</script>
+</body>
+</html>
